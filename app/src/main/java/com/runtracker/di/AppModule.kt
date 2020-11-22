@@ -3,7 +3,7 @@ package com.runtracker.di
 import android.content.Context
 import androidx.room.Room
 import com.runtracker.db.RunsDatabase
-import com.runtracker.util.Constants.RUNS_DATABASE_NAME
+import com.runtracker.utils.Constants.RUNS_DATABASE_NAME
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
