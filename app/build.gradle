@@ -20,10 +20,28 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+            // Signing certificate.
+            storeFile file("keyfile.jks")
+            // KeyStore password.
+            storePassword "I L0ve Runn1g!"
+            // Alias.
+            keyAlias "runtracker"
+            // Key password.
+            keyPassword "I L0ve Runn1g!"
+            v2SigningEnabled true
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.release
         }
     }
 
