@@ -10,6 +10,7 @@ import com.huawei.hms.maps.CameraUpdateFactory
 import com.huawei.hms.maps.HuaweiMap
 import com.huawei.hms.maps.MapView
 import com.huawei.hms.maps.OnMapReadyCallback
+import com.huawei.hms.maps.common.util.DistanceCalculator
 import com.huawei.hms.maps.model.LatLng
 import com.huawei.hms.maps.model.Marker
 import com.huawei.hms.maps.model.MarkerOptions
@@ -17,6 +18,7 @@ import com.huawei.hms.maps.model.PolylineOptions
 import com.runtracker.R
 import com.runtracker.services.Polyline
 import com.runtracker.services.TrackingService
+import com.runtracker.services.TrackingService.Companion.totalDistance
 import com.runtracker.ui.viewmodels.MainViewModel
 import com.runtracker.utils.Constants.ACTION_PAUSE_SERVICE
 import com.runtracker.utils.Constants.ACTION_START_OR_RESUME_SERVICE
@@ -69,6 +71,8 @@ class TrackingFragment: Fragment(R.layout.fragment_tracking) , OnMapReadyCallbac
 
         TrackingService.pathPoints.observe(viewLifecycleOwner, Observer {
             pathPoints = it
+            distanceSoFar()
+            tvDistance.text = (totalDistance.value).toString() + " m"
             addLatestPolyline()
             addMarker()
             moveCameraToUser()
@@ -135,6 +139,21 @@ class TrackingFragment: Fragment(R.layout.fragment_tracking) , OnMapReadyCallbac
         }
     }
 
+    private fun distanceSoFar()  {
+        if (pathPoints.isNotEmpty() && pathPoints.last().size > 1) {
+            val prelastLatLng = pathPoints.last()[pathPoints.last().size - 2]
+            val lastLatLng = pathPoints.last().last()
+
+            val distance = totalDistance.value!! + DistanceCalculator
+                .computeDistanceBetween(
+                    prelastLatLng,
+                    lastLatLng
+                )
+                .toInt()
+            totalDistance.postValue(distance)
+        }
+    }
+
     private fun addLatestPolyline() {
         if (pathPoints.isNotEmpty() && pathPoints.last().size > 1) {
             val prelastLatLng = pathPoints.last()[pathPoints.last().size - 2]
@@ -145,6 +164,7 @@ class TrackingFragment: Fragment(R.layout.fragment_tracking) , OnMapReadyCallbac
                 .add(prelastLatLng)
                 .add(lastLatLng)
             huaweiMap?.addPolyline(polylineOptions)
+
         }
     }
 

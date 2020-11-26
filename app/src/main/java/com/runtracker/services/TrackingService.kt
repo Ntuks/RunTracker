@@ -47,11 +47,13 @@ class TrackingService: LifecycleService() {
     companion object {
         val isTracking = MutableLiveData<Boolean>()
         val pathPoints = MutableLiveData<Polylines>()
+        val totalDistance = MutableLiveData<Int>()
     }
 
     private fun postInitialValues() {
         isTracking.postValue(false)
         pathPoints.postValue(mutableListOf())
+        totalDistance.postValue(0)
     }
 
     override fun onCreate() {
@@ -134,6 +136,7 @@ class TrackingService: LifecycleService() {
             pathPoints.value?.apply {
                 last().add(pos)
                 pathPoints.postValue(this)
+
             }
         }
     }
