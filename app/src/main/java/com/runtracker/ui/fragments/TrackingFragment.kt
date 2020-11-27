@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.huawei.hms.maps.CameraUpdateFactory
 import com.huawei.hms.maps.HuaweiMap
@@ -18,6 +19,7 @@ import com.huawei.hms.maps.model.Marker
 import com.huawei.hms.maps.model.MarkerOptions
 import com.huawei.hms.maps.model.PolylineOptions
 import com.runtracker.R
+import com.runtracker.adapters.ActivityAdapter
 import com.runtracker.services.Polyline
 import com.runtracker.services.TrackingService
 import com.runtracker.services.TrackingService.Companion.totalDistance
@@ -31,6 +33,7 @@ import com.runtracker.utils.Constants.POLYLINE_WIDTH
 import com.runtracker.utils.FormatUtility
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_tracking.*
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -40,6 +43,8 @@ class TrackingFragment: Fragment(R.layout.fragment_tracking) , OnMapReadyCallbac
 
     private var isTracking = false
     private var pathPoints = mutableListOf<Polyline>()
+
+    private lateinit var activityAdapter: ActivityAdapter
 
     private var currentTimeInMillis = 0L
 
@@ -99,8 +104,14 @@ class TrackingFragment: Fragment(R.layout.fragment_tracking) , OnMapReadyCallbac
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setUpRecyclerView()
+
         btnToggleRun.setOnClickListener{
             toggleRun()
+        }
+
+        btnMore.setOnClickListener{
+            findNavController().navigate(R.id.action_trackingFragment_to_activityRecordsFragment)
         }
 
         huaweiMapView = view.findViewById(R.id.mapView)
@@ -139,6 +150,16 @@ class TrackingFragment: Fragment(R.layout.fragment_tracking) , OnMapReadyCallbac
             val formattedTime = FormatUtility().getFormattedStopWatchTime(currentTimeInMillis)
             tvTimer.text = formattedTime
         })
+
+        TrackingService.activities.observe(viewLifecycleOwner, Observer {
+                activityAdapter.submitList(it)
+        })
+    }
+
+    private fun setUpRecyclerView() = rVDetected.apply {
+        activityAdapter = ActivityAdapter()
+        adapter = activityAdapter
+        layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun toggleRun() {
@@ -170,6 +191,7 @@ class TrackingFragment: Fragment(R.layout.fragment_tracking) , OnMapReadyCallbac
                     MAP_ZOOM
                 )
             )
+        } else {
         }
     }
 

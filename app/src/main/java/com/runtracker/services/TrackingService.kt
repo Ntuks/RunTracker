@@ -15,13 +15,11 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.huawei.hms.location.FusedLocationProviderClient
-import com.huawei.hms.location.LocationCallback
-import com.huawei.hms.location.LocationRequest
+import com.huawei.hms.location.*
 import com.huawei.hms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
-import com.huawei.hms.location.LocationResult
 import com.huawei.hms.maps.model.LatLng
 import com.runtracker.R
+import com.runtracker.receivers.LocationBroadcastReceiver
 import com.runtracker.utils.Constants.ACTION_PAUSE_SERVICE
 import com.runtracker.utils.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.runtracker.utils.Constants.ACTION_STOP_SERVICE
@@ -40,6 +38,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
+
 
 typealias Polyline = MutableList<LatLng>
 typealias Polylines = MutableList<Polyline>
@@ -60,19 +59,24 @@ class TrackingService: LifecycleService() {
 
     lateinit var currNotificationBuilder: NotificationCompat.Builder
 
+    private var pendingIntent: PendingIntent? = null
+    private var activityIdentificationService: ActivityIdentificationService? = null
+
     companion object {
         val runTimeInMillis = MutableLiveData<Long>()
         val isTracking = MutableLiveData<Boolean>()
         val pathPoints = MutableLiveData<Polylines>()
         val totalDistance = MutableLiveData<Int>()
+        val activities = MutableLiveData<MutableList<String>>()
     }
 
     private fun postInitialValues() {
         isTracking.postValue(false)
         pathPoints.postValue(mutableListOf())
         totalDistance.postValue(0)
+        activities.postValue(mutableListOf())
         runTimeInSeconds.postValue(0L)
-        runTimeInMillis.postValue(0L )
+        runTimeInMillis.postValue(0L)
     }
 
     override fun onCreate() {
@@ -81,11 +85,22 @@ class TrackingService: LifecycleService() {
         postInitialValues()
         fusedLocationProviderClient = FusedLocationProviderClient(this)
 
-        //
+        // Create an activityIdentificationService instance.
+        activityIdentificationService = ActivityIdentification.getService(this);
+        // Obtain a pendingIntent instance.
+        pendingIntent = getPendingIntent();
+
         isTracking.observe(this, Observer {
             updateLocationTracking(it)
             updateNotificationTrackingState(it)
         })
+    }
+
+    // Obtain PendingIntent associated with the custom static broadcast class LocationBroadcastReceiver.
+    private fun getPendingIntent(): PendingIntent? {
+        val intent = Intent(this, LocationBroadcastReceiver::class.java)
+        intent.action = LocationBroadcastReceiver.ACTION_PROCESS_LOCATION
+        return PendingIntent.getBroadcast(this, 0, intent, FLAG_UPDATE_CURRENT)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -173,16 +188,36 @@ class TrackingService: LifecycleService() {
                     locationCallback,
                     Looper.getMainLooper()
                 )
+
+                // Create an activity identification request.
+                activityIdentificationService!!.createActivityIdentificationUpdates(
+                    2000,
+                    pendingIntent
+                ) // Define callback for request success.
+                    .addOnSuccessListener {
+                        Timber.i("createActivityIdentificationUpdates onSuccess")
+                    } // Define callback for request failure.
+                    .addOnFailureListener { e ->
+                        Timber.e("createActivityIdentificationUpdates onFailure:" + e.message)
+                    }
             }
         } else {
             fusedLocationProviderClient.removeLocationUpdates(locationCallback)
-        }
 
+            // Stop requesting activity identification updates.
+            activityIdentificationService!!.deleteActivityIdentificationUpdates(pendingIntent) // Define callback for success in stopping requesting activity identification updates.
+                .addOnSuccessListener {
+                    Timber.i("deleteActivityIdentificationUpdates onSuccess")
+                } // Define callback for failure in stopping requesting activity identification updates.
+                .addOnFailureListener { e ->
+                    Timber.e("deleteActivityIdentificationUpdates onFailure:" + e.message)
+                }
+        }
     }
 
     // callback for getting actual location results
     val locationCallback = object : LocationCallback() {
-        override fun onLocationResult(result : LocationResult?) {
+        override fun onLocationResult(result: LocationResult?) {
             super.onLocationResult(result)
             if (isTracking.value!!) {
                 result?.locations?.let { locations ->
@@ -204,6 +239,7 @@ class TrackingService: LifecycleService() {
             }
         }
     }
+
 
     private fun addEmptyPolyline() = pathPoints.value?.apply {
         add(mutableListOf())
@@ -246,7 +282,7 @@ class TrackingService: LifecycleService() {
             val resumeIntent = Intent(this, TrackingService::class.java).apply {
                 action = ACTION_START_OR_RESUME_SERVICE
             }
-            PendingIntent.getService(this, 2, resumeIntent,FLAG_UPDATE_CURRENT)
+            PendingIntent.getService(this, 2, resumeIntent, FLAG_UPDATE_CURRENT)
         }
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

@@ -32,40 +32,59 @@
             android:id="@+id/tvDistance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
             android:text="0m"
             android:textSize="50sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintHorizontal_bias="0.458"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTimer"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.144" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnToggleRun"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="92dp"
+            android:layout_height="51dp"
             android:text="Start"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnFinishRun"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTimer"
-            app:layout_constraintVertical_bias="0.557" />
+            app:layout_constraintVertical_bias="0.511" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFinishRun"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="124dp"
+            android:layout_height="50dp"
             android:text="Finish Run"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/rVDetected"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/btnToggleRun"
-            app:layout_constraintTop_toBottomOf="@+id/tvDistance"
-            app:layout_constraintVertical_bias="0.233" />
+            app:layout_constraintTop_toBottomOf="@+id/tvTimer"
+            app:layout_constraintVertical_bias="0.865" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rVDetected"
+            android:layout_width="390dp"
+            android:layout_height="81dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.485"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnToggleRun" />
+
+        <Button
+            android:id="@+id/btnMore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="More"
+            app:layout_constraintBottom_toBottomOf="@+id/rVDetected"
+            app:layout_constraintEnd_toEndOf="@+id/rVDetected"
+            app:layout_constraintStart_toStartOf="@+id/btnFinishRun"
+            app:layout_constraintTop_toTopOf="@+id/rVDetected" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

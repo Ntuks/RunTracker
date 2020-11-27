@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="com.huawei.hms.permission.ACTIVITY_RECOGNITION"/>
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
 
     <application
         android:name=".BaseApplication"
@@ -29,6 +31,16 @@
 
         <service android:name=".services.TrackingService"
             android:foregroundServiceType="location"/>
+
+
+        <!-- Register a broadcast receiver for the activity identification service. -->
+        <receiver
+            android:name=".receivers.LocationBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.runtracker.receivers.LocationBroadcastReceiver.ACTION_PROCESS_LOCATION" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

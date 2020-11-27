@@ -32,6 +32,17 @@
         <action
             android:id="@+id/action_trackingFragment_to_runFragment"
             app:destination="@id/runFragment" />
+        <action
+            android:id="@+id/action_trackingFragment_to_activityRecordsFragment"
+            app:destination="@id/activityRecordsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/activityRecordsFragment"
+        android:name="com.runtracker.ui.fragments.ActivityRecordsFragment"
+        android:label="ActivityRecords" >
+        <action
+            android:id="@+id/action_activityRecordsFragment_to_trackingFragment"
+            app:destination="@id/trackingFragment" />
     </fragment>
     <fragment
         android:id="@+id/statisticsFragment"
