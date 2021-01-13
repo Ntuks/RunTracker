@@ -67,6 +67,7 @@ class TrackingService: LifecycleService() {
         val isTracking = MutableLiveData<Boolean>()
         val pathPoints = MutableLiveData<Polylines>()
         val totalDistance = MutableLiveData<Int>()
+        val activity = MutableLiveData<String>()
         val activities = MutableLiveData<MutableList<String>>()
     }
 
@@ -74,6 +75,7 @@ class TrackingService: LifecycleService() {
         isTracking.postValue(false)
         pathPoints.postValue(mutableListOf())
         totalDistance.postValue(0)
+        activity.postValue("")
         activities.postValue(mutableListOf())
         runTimeInSeconds.postValue(0L)
         runTimeInMillis.postValue(0L)
@@ -191,7 +193,7 @@ class TrackingService: LifecycleService() {
 
                 // Create an activity identification request.
                 activityIdentificationService!!.createActivityIdentificationUpdates(
-                    2000,
+                    1000,
                     pendingIntent
                 ) // Define callback for request success.
                     .addOnSuccessListener {

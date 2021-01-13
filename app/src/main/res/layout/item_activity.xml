@@ -8,7 +8,7 @@
     android:padding="25dp">
 
     <TextView
-        android:id="@+id/tvAcitivity"
+        android:id="@+id/tvActivityItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Activity"

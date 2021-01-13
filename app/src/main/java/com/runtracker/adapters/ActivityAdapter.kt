@@ -40,7 +40,7 @@ class ActivityAdapter (): RecyclerView.Adapter<ActivityAdapter.ActivityViewHolde
     override fun onBindViewHolder(holder: ActivityViewHolder, position: Int) {
         val activity = differ.currentList[position]
         holder.itemView.apply {
-            tvAcitivity.text  = activity
+            tvActivityItem.text  = activity
         }
     }
 

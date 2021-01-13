@@ -49,6 +49,7 @@ class LocationBroadcastReceiver : BroadcastReceiver() {
                             name = "UNDETECTED"
                         }
                     }
+                    TrackingService.activity.postValue(FormatUtility().formattedActivityListItem(time, name))
                     TrackingService.activities.value?.apply {
                         add(FormatUtility().formattedActivityListItem(time, name))
                         TrackingService.activities.postValue(this)

@@ -1,8 +1,10 @@
 package com.runtracker.ui.fragments
 
+import android.Manifest.permission.*
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import androidx.annotation.RequiresPermission
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -33,6 +35,7 @@ import com.runtracker.utils.Constants.POLYLINE_WIDTH
 import com.runtracker.utils.FormatUtility
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_tracking.*
+import kotlinx.android.synthetic.main.item_activity.*
 import javax.inject.Inject
 
 
@@ -104,8 +107,6 @@ class TrackingFragment: Fragment(R.layout.fragment_tracking) , OnMapReadyCallbac
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setUpRecyclerView()
-
         btnToggleRun.setOnClickListener{
             toggleRun()
         }
@@ -127,8 +128,13 @@ class TrackingFragment: Fragment(R.layout.fragment_tracking) , OnMapReadyCallbac
         subscribeToObservers()
     }
 
+    @RequiresPermission(allOf = [ACCESS_FINE_LOCATION, ACCESS_NETWORK_STATE])
     override fun onMapReady(hMap: HuaweiMap?) {
-            huaweiMap = hMap
+        huaweiMap = hMap
+        // Enable the my-location layer.
+        huaweiMap?.isMyLocationEnabled = true
+        // Enable the my-location icon.
+        huaweiMap?.uiSettings?.isMyLocationButtonEnabled = true
     }
 
     private fun subscribeToObservers() {
@@ -151,15 +157,9 @@ class TrackingFragment: Fragment(R.layout.fragment_tracking) , OnMapReadyCallbac
             tvTimer.text = formattedTime
         })
 
-        TrackingService.activities.observe(viewLifecycleOwner, Observer {
-                activityAdapter.submitList(it)
+        TrackingService.activity.observe(viewLifecycleOwner, Observer {
+            tvActivity.text = it
         })
-    }
-
-    private fun setUpRecyclerView() = rVDetected.apply {
-        activityAdapter = ActivityAdapter()
-        adapter = activityAdapter
-        layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun toggleRun() {

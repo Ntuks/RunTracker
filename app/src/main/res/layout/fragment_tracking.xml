@@ -59,15 +59,19 @@
             android:layout_height="50dp"
             android:text="Finish Run"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/rVDetected"
+            app:layout_constraintBottom_toTopOf="@+id/tvActivity"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/btnToggleRun"
             app:layout_constraintTop_toBottomOf="@+id/tvTimer"
             app:layout_constraintVertical_bias="0.865" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rVDetected"
+        <TextView
+            android:id="@+id/tvActivity"
+            android:text="Activity"
+            android:textSize="20sp"
+            android:paddingLeft="30dp"
+            android:paddingTop="25dp"
             android:layout_width="390dp"
             android:layout_height="81dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -76,15 +80,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnToggleRun" />
 
+
         <Button
             android:id="@+id/btnMore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="More"
-            app:layout_constraintBottom_toBottomOf="@+id/rVDetected"
-            app:layout_constraintEnd_toEndOf="@+id/rVDetected"
+            app:layout_constraintBottom_toBottomOf="@+id/tvActivity"
+            app:layout_constraintEnd_toEndOf="@+id/tvActivity"
             app:layout_constraintStart_toStartOf="@+id/btnFinishRun"
-            app:layout_constraintTop_toTopOf="@+id/rVDetected" />
+            app:layout_constraintTop_toTopOf="@+id/tvActivity" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -104,6 +109,8 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.huawei.hms.maps.MapView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
